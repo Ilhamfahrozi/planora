@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Heart, Star } from "lucide-react";
 
 const vendors = [
@@ -39,7 +40,7 @@ const vendors = [
 export default function VendorFeatured() {
   return (
     <section data-reveal className="bg-white px-6 py-20 md:px-12">
-        <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl">
         <div className="mb-10 flex items-end justify-between gap-6">
           <h2 className="text-3xl font-bold text-[#2A2A2A] md:text-4xl">Vendor Unggulan</h2>
           <a href="#" className="hidden items-center gap-1 text-sm font-bold uppercase tracking-tight text-[#FF9A9E] transition-all hover:gap-2 md:flex">
@@ -52,7 +53,9 @@ export default function VendorFeatured() {
           {vendors.map((vendor) => (
             <article key={vendor.name} className="group overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white shadow-[0_10px_30px_-20px_rgba(0,0,0,0.18)] transition-all hover:-translate-y-1 hover:shadow-xl">
               <div className="relative h-64 overflow-hidden">
-                <img src={vendor.image} alt={vendor.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                <div className="absolute inset-0">
+                  <Image src={vendor.image} alt={vendor.name} fill className="object-cover transition duration-500 group-hover:scale-105" />
+                </div>
                 <button type="button" aria-label="Simpan vendor" className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-gray-400 shadow-sm backdrop-blur-md transition hover:text-red-500">
                   <Heart className="h-5 w-5" />
                 </button>

@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 type Category = {
     title: string;
@@ -29,8 +30,10 @@ export default function CategorySection() {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
                     {categories.map((category) => (
                         <div key={category.title} className="group relative h-56 overflow-hidden rounded-[2rem] cursor-pointer">
-                            <img src={category.image} alt={category.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div className="absolute inset-0">
+                                <Image src={category.image} alt={category.title} fill className="object-cover transition duration-500 group-hover:scale-110" />
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                             <div className="absolute bottom-6 left-6 text-white">
                                 <h4 className="font-bold">{category.title}</h4>
                                 <p className="text-[10px] opacity-70">{category.count}</p>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { CheckCircle2, TrendingUp, Zap } from "lucide-react";
 
 export default function FeaturesSection() {
@@ -92,12 +93,12 @@ export default function FeaturesSection() {
                         <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Success Rate</p>
                     </div>
 
-                    <div className="aspect-square overflow-hidden rounded-[3rem] shadow-xl">
-                        <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80" alt="Decoration" className="h-full w-full object-cover grayscale" />
+                    <div className="aspect-square overflow-hidden rounded-[3rem] shadow-xl relative">
+                        <Image src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80" alt="Decoration" fill className="object-cover grayscale" />
                     </div>
 
-                    <div className="aspect-square overflow-hidden rounded-[3rem] shadow-xl">
-                        <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80" alt="Entertainment" className="h-full w-full object-cover" />
+                    <div className="aspect-square overflow-hidden rounded-[3rem] shadow-xl relative">
+                        <Image src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80" alt="Entertainment" fill className="object-cover" />
                     </div>
 
                     <div className="flex aspect-square flex-col justify-center rounded-[3rem] bg-[#F6F6F6] p-10 shadow-sm">

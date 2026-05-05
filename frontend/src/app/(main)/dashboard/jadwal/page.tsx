@@ -14,19 +14,19 @@ import {
 } from 'lucide-react';
 
 const ChevronLeftIcon = ({ className }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m15 18-6-6 6-6" /></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m15 18-6-6 6-6" /></svg>
 );
 const ChevronRightIcon = ({ className }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6" /></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6" /></svg>
 );
 const CalendarPlusIcon = ({ className }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /><line x1="12" x2="12" y1="14" y2="18" /><line x1="10" x2="14" y1="16" y2="16" /></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /><line x1="12" x2="12" y1="14" y2="18" /><line x1="10" x2="14" y1="16" y2="16" /></svg>
 );
 const CheckCircleIcon = ({ className }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" /></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" /></svg>
 );
 const ClockIcon = ({ className }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
 );
 
 type OrderStatus = 'Menunggu' | 'Dikonfirmasi' | 'Selesai';
@@ -272,21 +272,19 @@ export default function PesananPage() {
             <div className="flex bg-white border border-[#2A2A2A]/5 p-1 rounded-2xl shadow-sm">
               <button
                 onClick={() => setPesananView('list')}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                  pesananView === 'list'
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${pesananView === 'list'
                     ? 'bg-[#FF9A9E] text-white shadow-sm'
                     : 'text-[#2A2A2A]/30 hover:bg-slate-50'
-                }`}
+                  }`}
               >
                 <List className="w-3.5 h-3.5" /> Daftar
               </button>
               <button
                 onClick={() => setPesananView('calendar')}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                  pesananView === 'calendar'
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${pesananView === 'calendar'
                     ? 'bg-[#FF9A9E] text-white shadow-sm'
                     : 'text-[#2A2A2A]/30 hover:bg-slate-50'
-                }`}
+                  }`}
               >
                 <CalendarIcon className="w-3.5 h-3.5" /> Kalender
               </button>
@@ -307,20 +305,18 @@ export default function PesananPage() {
                 <button
                   key={status.name}
                   onClick={() => setFilterStatus(status.name)}
-                  className={`relative px-6 py-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 whitespace-nowrap ${
-                    filterStatus === status.name
+                  className={`relative px-6 py-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 whitespace-nowrap ${filterStatus === status.name
                       ? 'text-[#FF527B]'
                       : 'text-[#2A2A2A]/40 hover:text-[#2A2A2A]'
-                  }`}
+                    }`}
                 >
                   {status.name}
                   {status.count !== null && (
                     <span
-                      className={`w-5 h-5 flex items-center justify-center rounded-full text-[9px] font-black ${
-                        filterStatus === status.name
+                      className={`w-5 h-5 flex items-center justify-center rounded-full text-[9px] font-black ${filterStatus === status.name
                           ? 'bg-[#FF527B] text-white'
                           : 'bg-[#2A2A2A]/5 text-[#2A2A2A]/40'
-                      }`}
+                        }`}
                     >
                       {status.count}
                     </span>
@@ -418,11 +414,10 @@ export default function PesananPage() {
                   {[1, 2, 3, 4, 5].map((p) => (
                     <button
                       key={p}
-                      className={`w-10 h-10 rounded-xl text-[11px] font-black transition-all ${
-                        p === 1
+                      className={`w-10 h-10 rounded-xl text-[11px] font-black transition-all ${p === 1
                           ? 'bg-[#FCE6E3] text-[#FF527B] shadow-sm'
                           : 'text-[#2A2A2A]/30 hover:bg-slate-50'
-                      }`}
+                        }`}
                     >
                       {p}
                     </button>
@@ -480,33 +475,30 @@ export default function PesananPage() {
                 {calendarDays.map((date) => {
                   const cellContent = (
                     <div
-                      className={`border-b border-r border-gray-100 p-3 transition-all last:border-r-0 group hover:bg-[#FDF1F0]/50 cursor-pointer h-full flex flex-col ${
-                        date.isPrevMonth || date.isNextMonth
+                      className={`border-b border-r border-gray-100 p-3 transition-all last:border-r-0 group hover:bg-[#FDF1F0]/50 cursor-pointer h-full flex flex-col ${date.isPrevMonth || date.isNextMonth
                           ? 'bg-[#FAFAFC]'
                           : date.isEvent
                             ? 'bg-white'
                             : 'bg-white'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <span
-                          className={`text-[12px] font-bold ${
-                            date.isPrevMonth || date.isNextMonth
+                          className={`text-[12px] font-bold ${date.isPrevMonth || date.isNextMonth
                               ? 'text-gray-300'
                               : 'text-gray-700'
-                          }`}
+                            }`}
                         >
                           {date.day}
                         </span>
                         {date.isEvent && date.eventStatus && (
                           <span
-                            className={`text-[8px] font-black px-2 py-0.5 rounded-full whitespace-nowrap ${
-                              date.eventStatus === 'Menunggu'
+                            className={`text-[8px] font-black px-2 py-0.5 rounded-full whitespace-nowrap ${date.eventStatus === 'Menunggu'
                                 ? 'bg-[#FCE6E3] text-[#FF527B]'
                                 : date.eventStatus === 'Dikonfirmasi'
                                   ? 'bg-[#FFF9E5] text-[#F59E0B]'
                                   : 'bg-[#E6F9F0] text-[#10B981]'
-                            }`}
+                              }`}
                           >
                             {date.eventStatus === 'Menunggu' && '⏳'}
                             {date.eventStatus === 'Dikonfirmasi' && '✓'}
@@ -542,7 +534,7 @@ export default function PesananPage() {
                     <div key={date.key}>
                       {date.isEvent && date.order ? (
                         <div
-                          onClick={() => router.push(`/dashboard/jadwal/${date.order.id}`)}
+                          onClick={() => router.push(`/dashboard/jadwal/${date.order!.id}`)}
                           className="block"
                         >
                           {cellContent}

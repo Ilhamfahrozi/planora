@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 export default function LoginPage() {
-  const [isVendor] = useState(true);
+  const [userType, setUserType] = useState<'vendor' | 'admin'>('vendor');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
@@ -27,14 +27,14 @@ export default function LoginPage() {
     setAuthError('');
 
     const formData = new FormData(e.currentTarget);
-    const email = String(formData.get('email') ?? '').trim() || 'vendor@planora.dev';
-    const password = String(formData.get('password') ?? '').trim() || 'devvendor123';
+    const email = String(formData.get('email') ?? '').trim() || (userType === 'admin' ? 'admin@planora.dev' : 'vendor@planora.dev');
+    const password = String(formData.get('password') ?? '').trim() || (userType === 'admin' ? 'devadmin123' : 'devvendor123');
 
     const result = await signIn('credentials', {
       redirect: false,
       email,
       password,
-      role: 'vendor',
+      role: userType,
     });
 
     if (result?.error) {
@@ -43,7 +43,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.replace('/dashboard');
+    router.replace(userType === 'admin' ? '/admin/dashboard' : '/dashboard');
     router.refresh();
   };
 
@@ -133,7 +133,7 @@ export default function LoginPage() {
               Selamat Datang ✨
             </p>
             <h2 className="text-3xl md:text-[2rem] font-extrabold text-[#0D121F] mb-3 tracking-tight leading-tight">
-              Masuk ke <span className="text-[#FF9A9E]">Planora</span>
+              Masuk sebagai {userType === 'admin' ? 'Admin' : 'Vendor'}
             </h2>
             <p className="text-slate-400 text-sm font-medium">
               Belum punya akun?{' '}
@@ -144,6 +144,32 @@ export default function LoginPage() {
                 Daftar Sekarang
               </Link>
             </p>
+          </div>
+
+          {/* Quick Login Options */}
+          <div className="mb-8 flex gap-3 flex-col sm:flex-row">
+            <button
+              type="button"
+              onClick={() => setUserType('admin')}
+              className={`flex-1 rounded-xl border px-4 py-3 text-center font-bold transition text-sm md:text-base ${
+                userType === 'admin'
+                  ? 'border-[#FF9A9E]/60 bg-[#FF9A9E]/15 text-[#FF9A9E]'
+                  : 'border-[#FF9A9E]/30 bg-[#FF9A9E]/10 text-[#FF9A9E] hover:border-[#FF9A9E]/60 hover:bg-[#FF9A9E]/15'
+              }`}
+            >
+              Masuk Admin
+            </button>
+            <button
+              type="button"
+              onClick={() => setUserType('vendor')}
+              className={`flex-1 rounded-xl border px-4 py-3 text-center font-bold transition text-sm md:text-base ${
+                userType === 'vendor'
+                  ? 'border-[#FF9A9E]/60 bg-[#FF9A9E]/20 text-[#0D121F]'
+                  : 'border-[#FF9A9E]/40 bg-white text-[#0D121F] hover:bg-[#F7F9FC]'
+              }`}
+            >
+              Masuk Vendor
+            </button>
           </div>
 
           {/* Vendor-only login (customer accounts handled in mobile app) */}
@@ -256,7 +282,7 @@ export default function LoginPage() {
           {/* Google Sign In */}
           <button
             type="button"
-              className="w-full bg-white border border-[#E2E8F0] text-slate-700 font-bold py-4.5 rounded-2xl flex items-center justify-center gap-3 hover:bg-[#F7F9FC] transition-all shadow-sm mb-12 text-sm md:text-base"
+            className="w-full bg-white border border-[#E2E8F0] text-slate-700 font-bold py-4.5 rounded-2xl flex items-center justify-center gap-3 hover:bg-[#F7F9FC] transition-all shadow-sm mb-12 text-sm md:text-base"
           >
             <svg
               className="w-5 h-5"

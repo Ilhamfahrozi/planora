@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Web only supports vendor/admin roles; default to 'vendor' for credentials-based demo
-        const role = credentials.role === "vendor" ? "vendor" : "vendor";
+        const role = "vendor";
 
         return {
           id: "demo-user",

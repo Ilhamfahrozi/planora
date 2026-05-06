@@ -22,7 +22,7 @@ export default function AdminHeader({
   const [notifCount] = useState(3);
 
   return (
-    <header className="h-16 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40 border-b border-[#2A2A2A]/5">
+    <header className="h-16 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between border-b border-[#2A2A2A]/5">
       {/* Left — Toggle + Search */}
       <div className="flex items-center gap-4">
         {onToggleSidebar && (

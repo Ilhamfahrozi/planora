@@ -12,8 +12,8 @@ import {
   Activity,
   Layers,
   LogOut,
-  ClipboardList,
   BookOpen,
+  Settings,    
 } from 'lucide-react';
 
 type NavItem = {
@@ -68,6 +68,17 @@ const navGroups: Array<{ title: string; items: NavItem[] }> = [
         label: 'Kategori Jasa',
         icon: Layers,
         activeMatch: ['/admin/kategori-jasa'],
+      },
+    ],
+  },
+  {
+    title: 'AKUN',
+    items: [
+      {
+        href: '/admin/pengaturan',
+        label: 'Pengaturan',
+        icon: Settings,
+        activeMatch: ['/admin/pengaturan'],
       },
     ],
   },

@@ -12,7 +12,7 @@ import {
 
 export default function AdminDashboardPage() {
   return (
-    <div className="flex flex-col gap-8 py-6">
+    <div className="flex flex-col gap-8 p-8 py-6">
 
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6">

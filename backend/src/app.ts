@@ -1,30 +1,63 @@
 import express, { type Request, type Response, type NextFunction } from "express"
 import cors from "cors"
-import dotenv from "dotenv"
+import { env } from "./config/env.js"
+import { AppError } from "./utils/error.js"
+import { sendError } from "./utils/response.js"
 
-dotenv.config()
+// ─── Import Routes ────────────────────────────────────────────────────────────
+import authRoutes from "./modules/auth/auth.routes.js"
+import usersRoutes from "./modules/users/users.routes.js"   
+import vendorsRoutes from "./modules/vendors/vendors.routes.js"       
+import kategoriRoutes from "./modules/kategori/kategori.routes.js"   
 
 const app = express()
 
-// ─── Middleware ───────────────────────────────────────────────────────────────
-app.use(cors())
+// ─── Middleware ──────────────────────────────────────────────────────────────
+app.use(
+  cors({
+    origin: env.FRONTEND_URL,
+    credentials: true,
+  })
+)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// ─── Routes ───────────────────────────────────────────────────────────────────
-app.get("/", (req: Request, res: Response) => {
-    res.json({ message: "Planora API running", status: "ok" })
+// ─── Health Check ─────────────────────────────────────────────────────────────
+app.get("/", (_req: Request, res: Response) => {
+  res.json({
+    success: true,
+    message: "Planora API running",
+    version: "1.0.0",
+    env: env.NODE_ENV,
+  })
 })
 
-// ─── 404 Handler ─────────────────────────────────────────────────────────────
+// ─── API Routes ───────────────────────────────────────────────────────────────
+app.use("/api/v1/auth", authRoutes)
+app.use("/api/v1/users", usersRoutes) 
+app.use("/api/v1/vendors",  vendorsRoutes)    
+app.use("/api/v1/kategori", kategoriRoutes)   
+// app.use("/api/v1/jadwal",   jadwalRoutes)  ← TASK 6
+// app.use("/api/v1/bookings", bookingRoutes) ← TASK 7
+// app.use("/api/v1/payments", paymentRoutes) ← TASK 8
+// app.use("/api/v1/reviews",  reviewRoutes)  ← TASK 9
+// app.use("/api/v1/admin",    adminRoutes)   ← TASK 11
+
+// ─── 404 Handler ──────────────────────────────────────────────────────────────
 app.use((req: Request, res: Response) => {
-    res.status(404).json({ message: "Route not found" })
+  sendError(res, `Route ${req.method} ${req.path} tidak ditemukan`, 404)
 })
 
 // ─── Global Error Handler ─────────────────────────────────────────────────────
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error(`[Error] ${err.message}`)
-    res.status(500).json({ message: "Internal Server Error" })
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  if (err instanceof AppError) {
+    sendError(res, err.message, err.statusCode)
+    return
+  }
+
+  const message = err instanceof Error ? err.message : "Internal Server Error"
+  console.error("[Unhandled Error]", err)
+  sendError(res, message, 500)
 })
 
 export default app

@@ -29,12 +29,13 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const email = String(formData.get('email') ?? '').trim() || (userType === 'admin' ? 'admin@planora.dev' : 'vendor@planora.dev');
     const password = String(formData.get('password') ?? '').trim() || (userType === 'admin' ? 'devadmin123' : 'devvendor123');
+    const role = userType === 'admin' ? 'ADMIN' : 'VENDOR';
 
     const result = await signIn('credentials', {
       redirect: false,
       email,
       password,
-      role: userType,
+      role,
     });
 
     if (result?.error) {

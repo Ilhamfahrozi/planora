@@ -49,13 +49,9 @@ export default function DashboardLayoutWrapper({ children }: DashboardLayoutProp
   return (
     <div className="min-h-screen bg-[#FDF1F0] flex font-sans text-[#2A2A2A]">
       {/* SIDEBAR */}
-      <aside
-        className={`${
-          isSidebarOpen ? 'w-64' : 'w-20'
-        } bg-[#2A2A2A] transition-all duration-300 flex flex-col fixed h-full z-50`}
-      >
+      <aside className={`w-[280px] bg-[#0A0A0A] border-r border-white/5 flex flex-col fixed h-screen left-0 top-0 z-20`}>
         {/* Logo Section */}
-        <div className="p-6 pb-6 flex items-center gap-3 border-b border-white/5">
+        <div className="p-8 pb-8 flex items-center gap-3 border-b border-white/5">
           <Image
             src="/images/logogmbr.png"
             alt="Planora"
@@ -74,8 +70,12 @@ export default function DashboardLayoutWrapper({ children }: DashboardLayoutProp
         </div>
 
         {/* Menu Items */}
-        <nav className="flex-1 px-3 overflow-y-auto custom-scrollbar mt-6">
-          <ul className="space-y-1">
+        <nav className="flex-1 px-3 mt-6 overflow-y-auto">
+          <div className="flex flex-col gap-2">
+            <span className="text-[9px] font-bold tracking-[0.2em] text-white/40 uppercase px-3 mb-2 block">
+              NAVIGASI
+            </span>
+            <ul className="space-y-1">
             {menuItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -122,9 +122,8 @@ export default function DashboardLayoutWrapper({ children }: DashboardLayoutProp
               );
             })}
           </ul>
+          </div>
         </nav>
-
-        {/* Profile Sidebar Footer */}
         <div className="p-3 border-t border-white/5">
           <div
             className={`flex items-center gap-2 p-2.5 rounded-lg bg-white/5 border border-white/5 ${
@@ -145,7 +144,7 @@ export default function DashboardLayoutWrapper({ children }: DashboardLayoutProp
       </aside>
 
       {/* MAIN AREA */}
-      <div className={`flex-1 transition-all duration-300 flex flex-col ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+      <div className={`ml-[280px] flex-1 flex flex-col min-h-screen`}>
         {/* TOPBAR */}
         <header className="h-16 bg-[#FDF1F0] px-6 flex items-center justify-between sticky top-0 z-40 border-b border-[#F1D7D3]">
           <button

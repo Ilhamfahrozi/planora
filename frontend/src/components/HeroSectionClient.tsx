@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { CATEGORIES } from "../lib/categories";
 
 const SearchIcon = ({ className }: { className?: string }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -140,8 +141,8 @@ export default function HeroSectionClient() {
 
                             <div className="mb-8 flex flex-wrap gap-2">
                                 <div className="flex flex-wrap gap-2">
-                                    {['Fotografi', 'Katering', 'Dekorasi', 'Wedding Organizer', 'Hiburan'].map((chip) => (
-                                        <button key={chip} type="button" className="rounded-full border border-white/20 px-5 py-2 text-[11px] font-bold uppercase tracking-tight text-white transition hover:bg-white/10">{chip}</button>
+                                    {CATEGORIES.slice(0, 5).map((chip) => (
+                                        <button key={chip.id} type="button" className="rounded-full border border-white/20 px-5 py-2 text-[11px] font-bold uppercase tracking-tight text-white transition hover:bg-white/10">{chip.name}</button>
                                     ))}
                                 </div>
                             </div>

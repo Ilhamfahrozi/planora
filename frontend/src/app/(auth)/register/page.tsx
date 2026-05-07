@@ -3,22 +3,10 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { CATEGORIES } from "../../../lib/categories";
 import { Briefcase, Building, ChevronDown, Eye, EyeOff, Lock, Mail, MapPin, Phone, ShieldCheck, Sparkles } from "lucide-react";
 
-const serviceCategories = [
-  "Wedding Organizer",
-  "Venue",
-  "Katering",
-  "Fotografi",
-  "Videografi",
-  "Dekorasi & Florist",
-  "Make Up Artist (MUA)",
-  "Busana Pengantin",
-  "MC (Master of Ceremony)",
-  "Hiburan Musik (Band/DJ)",
-  "Undangan Digital",
-  "Souvenir",
-];
+const serviceCategories = CATEGORIES;
 
 export default function RegisterPage() {
   const role = "vendor";
@@ -112,7 +100,7 @@ export default function RegisterPage() {
                   <select className="w-full bg-[#F7F9FC] border border-[#E2E8F0] rounded-2xl py-4.5 pl-12 pr-10 appearance-none focus:outline-none focus:ring-2 focus:ring-[#FF9A9E]/20 focus:bg-white transition-all text-slate-600 font-medium text-sm md:text-base">
                     <option value="">Pilih kategori utama</option>
                     {serviceCategories.map((category) => (
-                      <option key={category} value={category}>{category}</option>
+                      <option key={category.id} value={category.id}>{category.name}</option>
                     ))}
                   </select>
                   <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />

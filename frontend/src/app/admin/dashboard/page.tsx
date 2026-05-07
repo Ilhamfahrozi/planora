@@ -9,6 +9,7 @@ import {
   Clock,
   Terminal,
 } from 'lucide-react';
+import { getCategoryById } from '../../../lib/categories';
 
 export default function AdminDashboardPage() {
   return (
@@ -149,9 +150,9 @@ export default function AdminDashboardPage() {
             </div>
 
             {[
-              { nama: 'Wafa Media Studio', owner: 'Wahidah Wafa Ihsani', kategori: 'Fotografi', lokasi: 'Padang' },
-              { nama: 'Catering Jaya Raya', owner: 'Budi Santoso', kategori: 'Katering', lokasi: 'Bukittinggi' },
-              { nama: 'Dekor Elegan', owner: 'Siti Rahayu', kategori: 'Dekorasi', lokasi: 'Padang' },
+              { nama: 'Wafa Media Studio', owner: 'Wahidah Wafa Ihsani', kategori: 'fotografi', lokasi: 'Padang' },
+              { nama: 'Catering Jaya Raya', owner: 'Budi Santoso', kategori: 'katering', lokasi: 'Bukittinggi' },
+              { nama: 'Dekor Elegan', owner: 'Siti Rahayu', kategori: 'dekorasi', lokasi: 'Padang' },
             ].map((vendor, i, arr) => (
               <div
                 key={vendor.nama}
@@ -162,7 +163,7 @@ export default function AdminDashboardPage() {
                   <span className="text-[9px] font-medium text-[#2A2A2A]/40">{vendor.owner}</span>
                 </div>
                 <div className="w-[20%]">
-                  <span className="text-[10px] font-bold text-[#2A2A2A]/50">{vendor.kategori}</span>
+                  <span className="text-[10px] font-bold text-[#2A2A2A]/50">{getCategoryById(vendor.kategori)?.name ?? vendor.kategori}</span>
                 </div>
                 <div className="w-[20%]">
                   <span className="text-[10px] font-bold text-[#2A2A2A]/50">{vendor.lokasi}</span>

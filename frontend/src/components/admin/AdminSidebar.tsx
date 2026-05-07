@@ -16,6 +16,7 @@ import {
   ReceiptText,
   Settings,
 } from 'lucide-react';
+import { adminTokens } from './designTokens';
 
 type NavItem = {
   href: string;
@@ -120,8 +121,8 @@ export default function AdminSidebar() {
 
   return (
     <>
-      <aside className="w-64 bg-[#2A2A2A] transition-all duration-300 flex flex-col fixed h-full z-50">
-        <div className="p-6 pb-6 flex items-center gap-3 border-b border-white/5">
+      <aside className={`w-[280px] bg-[#0A0A0A] border-r border-white/5 flex flex-col fixed h-screen left-0 top-0 z-50`}>
+        <div className="p-8 pb-8 flex items-center gap-3 border-b border-white/5">
           <Image
             src="/images/logogmbr.png"
             alt="Planora"
@@ -137,10 +138,10 @@ export default function AdminSidebar() {
           )}
         </div>
 
-        <nav className="flex-1 px-3 overflow-y-auto mt-6">
+        <nav className="flex-1 px-6 overflow-hidden flex flex-col gap-4">
           {navGroups.map((group) => (
             <div key={group.title} className="mb-6">
-              <span className="text-[9px] font-bold tracking-[0.2em] text-white/30 uppercase px-3 mb-2 block">
+              <span className="text-[9px] font-bold tracking-[0.2em] text-white/40 uppercase px-3 mb-2 block">
                 {group.title}
               </span>
               <ul className="space-y-1">
@@ -151,8 +152,8 @@ export default function AdminSidebar() {
                     <li key={item.href}>
                       <Link
                         href={item.href}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm transition-all group cursor-pointer ${
-                          active ? 'bg-[#FF9A9E] hover:bg-[#FF8A8E]' : 'hover:bg-white/10'
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-semibold text-xs transition-all group cursor-pointer ${
+                          active ? 'bg-[#FF9A9E] hover:bg-[#FF9A9E]/90' : 'hover:bg-white/5'
                         }`}
                       >
                         <Icon
@@ -162,7 +163,7 @@ export default function AdminSidebar() {
                         />
                         <div className="flex flex-1 justify-between items-center min-w-0">
                           <span
-                            className={`text-sm truncate transition-colors ${
+                            className={`text-xs truncate transition-colors ${
                               active ? 'text-white' : 'text-white/60 group-hover:text-white'
                             }`}
                           >
@@ -171,7 +172,7 @@ export default function AdminSidebar() {
                           {item.badge ? (
                             <span
                               className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-black ${
-                                active ? 'bg-white/30 text-white' : 'bg-[#FF527B] text-white'
+                                active ? 'bg-white/30 text-white' : 'bg-[#FF9A9E] text-white'
                               }`}
                             >
                               {item.badge}
@@ -188,7 +189,7 @@ export default function AdminSidebar() {
         </nav>
 
         <div className="p-3 border-t border-white/5">
-          <div className="flex items-center gap-2 p-2.5 rounded-lg bg-white/5 border border-white/5">
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/5">
             <div className="w-8 h-8 rounded-md bg-[#FF9A9E] flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
               A
             </div>
@@ -196,9 +197,9 @@ export default function AdminSidebar() {
               <p className="text-xs font-semibold truncate text-white">Admin Planora</p>
               <button
                 onClick={() => setShowLogoutModal(true)}
-                className="flex items-center gap-1 text-[8px] text-[#FF9A9E] font-bold uppercase tracking-tight hover:text-[#FF527B] transition-colors whitespace-nowrap"
+                className="flex items-center gap-1 text-[8px] text-[#FF9A9E] font-bold uppercase tracking-tight hover:text-[#FF9A9E]/90 transition-colors whitespace-nowrap"
               >
-                <LogOut className="w-2.5 h-2.5" /> KELUAR
+                <LogOut className="w-3 h-3" /> KELUAR
               </button>
             </div>
           </div>

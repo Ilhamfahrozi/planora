@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
+import { getPendingOrderCount } from '@/lib/orders';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -26,12 +27,13 @@ export default function DashboardLayoutWrapper({ children }: DashboardLayoutProp
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const pathname = usePathname();
+  const pendingOrderCount = getPendingOrderCount();
 
   const vendorName = 'Wafa Decoration';
 
   const menuItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Pesanan', href: '/dashboard/jadwal', icon: ShoppingBag, badge: 3 },
+    { name: 'Pesanan', href: '/dashboard/jadwal', icon: ShoppingBag, badge: pendingOrderCount },
     { name: 'Paket Layanan', href: '/dashboard/katalog', icon: Briefcase },
     { name: 'Portofolio', href: '/dashboard/portofolio', icon: ImageIcon },
     { name: 'Ulasan', href: '/dashboard/ulasan', icon: Star },
@@ -129,21 +131,14 @@ export default function DashboardLayoutWrapper({ children }: DashboardLayoutProp
               !isSidebarOpen && 'justify-center'
             }`}
           >
-            <img
-              src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=300"
-              className="w-8 h-8 rounded-md object-cover border border-white/10 flex-shrink-0"
-              alt="Vendor Logo"
-            />
             {isSidebarOpen && (
-              <div className="overflow-hidden text-left min-w-0">
-                <p className="text-xs font-semibold truncate text-white">{vendorName}</p>
-                <button
-                  onClick={() => setShowLogoutModal(true)}
-                  className="flex items-center gap-1 text-[8px] text-[#FF9A9E] font-bold uppercase tracking-tight hover:text-[#FF527B] transition-colors whitespace-nowrap"
-                >
-                  <LogOut className="w-2.5 h-2.5" /> KELUAR
-                </button>
-              </div>
+              <button
+                onClick={() => setShowLogoutModal(true)}
+                className="flex w-full items-center justify-center gap-1.5 text-sm text-[#FF9A9E] font-extrabold uppercase tracking-wide hover:text-[#FF527B] transition-colors whitespace-nowrap"
+              >
+                <LogOut className="w-3 h-3" />
+                Keluar
+              </button>
             )}
           </div>
         </div>
@@ -152,7 +147,7 @@ export default function DashboardLayoutWrapper({ children }: DashboardLayoutProp
       {/* MAIN AREA */}
       <div className={`flex-1 transition-all duration-300 flex flex-col ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
         {/* TOPBAR */}
-        <header className="h-16 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40 border-b border-[#2A2A2A]/5">
+        <header className="h-16 bg-[#FDF1F0] px-6 flex items-center justify-between sticky top-0 z-40 border-b border-[#F1D7D3]">
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-1.5 text-[#2A2A2A] hover:bg-gray-100 rounded-md transition"

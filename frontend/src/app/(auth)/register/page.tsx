@@ -73,10 +73,15 @@ export default function RegisterPage() {
 
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-white p-8 md:p-20 overflow-y-auto">
         <div className="w-full max-w-[500px] py-8 md:py-10">
+          {/* Back to Home Button */}
+          <Link href="/" className="inline-flex items-center gap-2 mb-8 text-slate-500 hover:text-[#FF9A9E] transition-colors text-sm font-semibold">
+            ← Kembali ke Beranda
+          </Link>
+
           <div className="mb-10">
             <p className="text-slate-400 text-[11px] mb-2 font-bold uppercase tracking-[0.15em]">Selamat Datang ✨</p>
             <h2 className="text-3xl md:text-[2rem] font-extrabold text-[#0D121F] mb-3 tracking-tight leading-tight">Daftar Vendor <span className="text-[#FF9A9E]">Planora</span></h2>
-            <p className="text-slate-400 text-sm font-medium">Sudah punya akun? <Link href="/login" className="text-[#FF9A9E] font-bold hover:underline">Masuk Sekarang</Link></p>
+            <p className="text-slate-400 text-sm font-medium">Sudah punya akun? <Link href="/login" className="font-bold hover:underline" style={{color: '#FF9A9E'}}>Masuk Sekarang</Link></p>
           </div>
 
           <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>

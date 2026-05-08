@@ -21,6 +21,30 @@ export default function LoginPage() {
   const [authError, setAuthError] = useState('');
   const router = useRouter();
 
+  const handleQuickLogin = async (type: 'vendor' | 'admin') => {
+    if (isLoading) return;
+
+    setUserType(type);
+    setIsLoading(true);
+    setAuthError('');
+
+    const result = await signIn('credentials', {
+      redirect: false,
+      email: type === 'admin' ? 'admin@planora.dev' : 'vendor@planora.dev',
+      password: type === 'admin' ? 'devadmin123' : 'devvendor123',
+      role: type,
+    });
+
+    if (result?.error) {
+      setAuthError('Login gagal. Coba lagi dengan akun demo yang tersedia.');
+      setIsLoading(false);
+      return;
+    }
+
+    router.replace(type === 'admin' ? '/admin/dashboard' : '/dashboard');
+    router.refresh();
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -156,25 +180,27 @@ export default function LoginPage() {
           <div className="mb-8 flex gap-3 flex-col sm:flex-row">
             <button
               type="button"
-              onClick={() => setUserType('admin')}
+              onClick={() => handleQuickLogin('admin')}
+              disabled={isLoading}
               className={`flex-1 rounded-xl border px-4 py-3 text-center font-bold transition text-sm md:text-base ${
                 userType === 'admin'
                   ? 'border-[#FF9A9E] bg-[#FFE6E1] text-[#FF4F79] shadow-sm'
                   : 'border-[#E5E7EB] bg-white text-[#94A3B8] hover:border-[#FF9A9E]/50 hover:bg-[#FFF7F8] hover:text-[#FF7B93]'
               }`}
             >
-              Masuk Admin
+              {isLoading && userType === 'admin' ? 'Memproses...' : 'Masuk Admin'}
             </button>
             <button
               type="button"
-              onClick={() => setUserType('vendor')}
+              onClick={() => handleQuickLogin('vendor')}
+              disabled={isLoading}
               className={`flex-1 rounded-xl border px-4 py-3 text-center font-bold transition text-sm md:text-base ${
                 userType === 'vendor'
                   ? 'border-[#FF9A9E] bg-[#FFE6E1] text-[#FF4F79] shadow-sm'
                   : 'border-[#E5E7EB] bg-white text-[#94A3B8] hover:border-[#FF9A9E]/50 hover:bg-[#FFF7F8] hover:text-[#FF7B93]'
               }`}
             >
-              Masuk Vendor
+              {isLoading && userType === 'vendor' ? 'Memproses...' : 'Masuk Vendor'}
             </button>
           </div>
 

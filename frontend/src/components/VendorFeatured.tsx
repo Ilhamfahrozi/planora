@@ -23,7 +23,7 @@ export default function VendorFeatured() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 flex items-end justify-between gap-6">
           <h2 className="text-3xl font-bold text-[#2A2A2A] md:text-4xl">Vendor Unggulan</h2>
-          <a href="#" className="hidden items-center gap-1 text-sm font-bold uppercase tracking-tight text-[#FF9A9E] transition-all hover:gap-2 md:flex">
+          <a href="/vendors" className="hidden items-center gap-1 text-sm font-bold uppercase tracking-tight text-[#FF9A9E] transition-all hover:gap-2 md:flex">
             Lihat Semua Vendor
             <span aria-hidden="true">›</span>
           </a>

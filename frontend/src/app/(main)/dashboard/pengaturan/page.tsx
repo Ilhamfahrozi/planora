@@ -187,7 +187,8 @@ export default function PengaturanVendorPage() {
 
   const handleLogout = async () => {
     setShowLogoutModal(false);
-    await signOut({ callbackUrl: '/login' });
+    await signOut({ redirect: false, callbackUrl: '/login' });
+    window.location.href = '/login';
   };
 
   const handleOpenDeleteModal = () => {
@@ -286,13 +287,13 @@ export default function PengaturanVendorPage() {
 
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="self-start lg:col-span-3">
-            <div className="sticky top-10 h-fit rounded-[32px] border border-[#2A2A2A]/5 bg-white p-4 shadow-sm">
+            <div className="sticky top-10 h-fit rounded-2xl border border-[#2A2A2A]/5 bg-white p-4 shadow-sm">
               <nav className="space-y-1">{sidebarItems}</nav>
             </div>
           </div>
 
           <div ref={rightRef} className="space-y-10 lg:col-span-9 max-h-[calc(100vh-6rem)] overflow-auto pr-4">
-            <section id="profil" className="scroll-mt-10 rounded-[40px] border border-[#2A2A2A]/5 bg-white p-8 shadow-sm md:p-10 space-y-10">
+              <section id="profil" className="scroll-mt-10 rounded-3xl border border-[#2A2A2A]/5 bg-white p-8 shadow-sm md:p-10 space-y-10">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-xl font-black text-[#2A2A2A]">Profil Bisnis</h3>
@@ -307,7 +308,7 @@ export default function PengaturanVendorPage() {
 
               <div className="flex flex-col items-center gap-8 py-6 md:flex-row md:items-center">
                 <div className="relative">
-                    <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-[36px] border-4 border-white bg-[#FCE6E3] text-3xl font-black text-[#FF527B] shadow-xl">
+                    <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-2xl border-4 border-white bg-[#FCE6E3] text-3xl font-black text-[#FF527B] shadow-xl">
                       {avatarUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={avatarUrl} alt="avatar" className="h-full w-full object-cover" />
@@ -385,7 +386,7 @@ export default function PengaturanVendorPage() {
               </div>
             </section>
 
-            <section id="keamanan" className="scroll-mt-10 rounded-[40px] border border-[#2A2A2A]/5 bg-white p-8 shadow-sm md:p-10 space-y-10">
+            <section id="keamanan" className="scroll-mt-10 rounded-3xl border border-[#2A2A2A]/5 bg-white p-8 shadow-sm md:p-10 space-y-10">
               <div>
                 <h3 className="text-xl font-black text-[#2A2A2A]">Keamanan Akun</h3>
                 <p className="mt-1 text-xs font-medium uppercase tracking-wider text-slate-400">Ganti kata sandi dan kelola keamanan login</p>
@@ -408,7 +409,7 @@ export default function PengaturanVendorPage() {
               </div>
             </section>
 
-            <section id="rekening" className="scroll-mt-10 rounded-[40px] border border-[#2A2A2A]/5 bg-white p-8 shadow-sm md:p-10 space-y-10">
+            <section id="rekening" className="scroll-mt-10 rounded-3xl border border-[#2A2A2A]/5 bg-white p-8 shadow-sm md:p-10 space-y-10">
               <div>
                 <h3 className="text-xl font-black text-[#2A2A2A]">Rekening Bank</h3>
                 <p className="mt-1 text-xs font-medium uppercase tracking-wider text-slate-400">Rekening tujuan pencairan dana dari Planora</p>
@@ -478,7 +479,7 @@ export default function PengaturanVendorPage() {
               </div>
             </section>
 
-            <section id="notifikasi" className="scroll-mt-10 rounded-[40px] border border-[#2A2A2A]/5 bg-white p-8 shadow-sm md:p-10 space-y-8">
+            <section id="notifikasi" className="scroll-mt-10 rounded-3xl border border-[#2A2A2A]/5 bg-white p-8 shadow-sm md:p-10 space-y-8">
               <div className="pb-2">
                 <h3 className="text-xl font-black text-[#2A2A2A]">Notifikasi</h3>
                 <p className="mt-1 text-xs font-medium uppercase tracking-wider text-slate-400">Atur kapan dan bagaimana Anda menerima notifikasi</p>
@@ -508,7 +509,7 @@ export default function PengaturanVendorPage() {
               </div>
             </section>
 
-            <section className="flex flex-col items-center justify-between gap-6 rounded-[40px] border border-red-100 bg-red-50 p-8 shadow-sm md:flex-row md:p-10">
+            <section className="flex flex-col items-center justify-between gap-6 rounded-3xl border border-red-100 bg-red-50 p-8 shadow-sm md:flex-row md:p-10">
               <div className="space-y-1 text-center md:text-left">
                 <h3 className="text-lg font-black uppercase tracking-tight text-red-500">Hapus Akun Vendor</h3>
                 <p className="text-xs font-medium text-red-400">Akun dan semua data toko akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.</p>

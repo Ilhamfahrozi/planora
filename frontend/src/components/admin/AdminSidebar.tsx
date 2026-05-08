@@ -113,10 +113,9 @@ export default function AdminSidebar() {
   const handleConfirmLogout = async () => {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
-    const result = await signOut({ redirect: false, callbackUrl: '/login' });
     setShowLogoutModal(false);
-    router.replace(result.url ?? '/login');
-    router.refresh();
+    // Redirect langsung ke login setelah logout
+    await signOut({ redirect: true, callbackUrl: '/login' });
   };
 
   return (

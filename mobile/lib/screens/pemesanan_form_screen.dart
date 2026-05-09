@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../services/api_service.dart';
 import 'package:intl/intl.dart';
+
 
 class PemesananFormScreen extends StatefulWidget {
   const PemesananFormScreen({super.key});
@@ -12,6 +12,7 @@ class PemesananFormScreen extends StatefulWidget {
 
 class _PemesananFormScreenState extends State<PemesananFormScreen> {
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
   Map<String, dynamic>? _serviceData;
@@ -29,6 +30,7 @@ class _PemesananFormScreenState extends State<PemesananFormScreen> {
   @override
   void dispose() {
     _dateController.dispose();
+    _addressController.dispose();
     _notesController.dispose();
     super.dispose();
   }
@@ -58,7 +60,7 @@ class _PemesananFormScreenState extends State<PemesananFormScreen> {
     );
     if (picked != null) {
       setState(() {
-        _dateController.text = DateFormat('MM/dd/yyyy').format(picked);
+        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
   }
@@ -75,45 +77,29 @@ class _PemesananFormScreenState extends State<PemesananFormScreen> {
       _isSubmitting = true;
     });
 
-    try {
-      final response = await http
-          .post(
-            Uri.parse('http://10.0.2.2:3000/api/orders'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
-              'serviceId': _serviceData?['id'] ?? '1',
-              'date': _dateController.text,
-              'notes': _notesController.text,
-              // Normally includes userId or token from auth.
-            }),
-          )
-          .timeout(const Duration(seconds: 10));
+    final String layananId = _serviceData?['id']?.toString() ?? '1';
+    final String date = _dateController.text;
+    final String address = _addressController.text.trim();
+    final String notes = _notesController.text.trim();
 
-      if (response.statusCode == 201 ||
-          response.statusCode == 200 ||
-          response.statusCode == 202) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Pemesanan berhasil!')));
-        // Kembali ke beranda atau pesanan list
+    final result = await ApiService.createBooking(layananId, date, address, notes);
+
+    if (mounted) {
+      setState(() {
+        _isSubmitting = false;
+      });
+
+      if (result['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pemesanan berhasil!')),
+        );
         Navigator.popUntil(context, ModalRoute.withName('/home'));
-        // Redirect ke menu Pesanan dengan BottomNavBar index jika dikendalikan home, atau push named.
       } else {
-        throw Exception('Gagal melakukan pesanan');
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Gagal melakukan pemesanan. Server bermasalah.'),
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Gagal melakukan pemesanan.'),
+          ),
+        );
       }
     }
   }
@@ -273,6 +259,30 @@ class _PemesananFormScreenState extends State<PemesananFormScreen> {
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black45),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Alamat Input
+                  const Text(
+                    'ALAMAT ACARA',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _addressController,
+                    decoration: const InputDecoration(
+                      hintText: 'Tuliskan lokasi acara',
+                      enabledBorder: UnderlineInputBorder(
+                         borderSide: BorderSide(color: Colors.black12),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                         borderSide: BorderSide(color: Colors.black45),
                       ),
                     ),
                   ),

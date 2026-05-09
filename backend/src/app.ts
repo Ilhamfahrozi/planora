@@ -12,6 +12,9 @@ import kategoriRoutes from "./modules/kategori/kategori.routes.js"
 import jadwalRoutes from "./modules/jadwal/jadwal.routes.js"
 import bookingsRoutes from "./modules/bookings/bookings.routes.js"
 import paymentsRoutes from "./modules/payments/payments.routes.js"
+import reviewRoutes from "./modules/reviews/reviews.routes.js"
+import notificationRoutes from "./modules/notifications/notifications.routes.js"
+import adminRoutes from "./modules/admin/admin.routes.js"
 
 const app = express()
 
@@ -43,8 +46,9 @@ app.use("/api/v1/kategori", kategoriRoutes)
 app.use("/api/v1/jadwal", jadwalRoutes)
 app.use("/api/v1/bookings", bookingsRoutes)
 app.use("/api/v1/payments", paymentsRoutes)
-// app.use("/api/v1/reviews",  reviewRoutes)  ← TASK 9
-// app.use("/api/v1/admin",    adminRoutes)   ← TASK 11
+app.use("/api/v1/reviews", reviewRoutes)
+app.use("/api/v1/notifications", notificationRoutes)
+app.use("/api/v1/admin", adminRoutes)
 
 // ─── 404 Handler ──────────────────────────────────────────────────────────────
 app.use((req: Request, res: Response) => {

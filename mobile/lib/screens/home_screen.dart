@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../services/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,32 +21,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Fungsi untuk menarik data aktual dari Backend
   Future<void> _fetchVendors() async {
-    try {
-      // Endpoint Backend API (menyesuaikan URL dasar backend)
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/api/services'),
-      );
+    setState(() {
+      _isLoading = true;
+    });
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          _vendors = data; // Ambil data jika backend merespon
-        });
-      } else {
-        setState(() {
-          _vendors = []; // Jika endpoint tidak ada, biarkan kosong (sesuai req)
-        });
-      }
-    } catch (e) {
-      // Tangkap error jika backend mati/belum ada endpoint (akan kosong)
-      setState(() {
-        _vendors = [];
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    final vendorsData = await ApiService.getVendors();
+
+    setState(() {
+      _vendors = vendorsData;
+      _isLoading = false;
+    });
   }
 
   @override
@@ -249,14 +232,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: _vendors.length,
                         itemBuilder: (context, index) {
                           final vendor = _vendors[index];
+                          // Asumsi data backend: vendor.businessName, vendor.city, dll
                           return _buildVendorCard(
                             id: vendor['id']?.toString() ?? '1',
-                            name: vendor['name'] ?? 'Vendor',
-                            category: vendor['category'] ?? 'Kategori',
-                            price: 'Rp ${vendor['price'] ?? 0}',
+                            name: vendor['businessName'] ?? 'Vendor Name',
+                            category: vendor['city'] ?? 'Kota',
+                            price: 'Lihat Detail',
                             rating: vendor['rating']?.toString() ?? '0.0',
                             imageUrl:
-                                vendor['imageUrl'] ??
+                                vendor['avatar'] ??
                                 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=200&auto=format&fit=crop',
                             context: context,
                           );

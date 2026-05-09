@@ -21,11 +21,11 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
     return
   }
 
-  const result = await paymentsService.verifyPayment(req.userId, req.userRole, req.params.id, parsed.data)
+  const result = await paymentsService.verifyPayment(req.userId, req.userRole, req.params.id as string, parsed.data)
   sendSuccess(res, result, "Status pembayaran berhasil diverifikasi")
 }
 
 export const getPayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const result = await paymentsService.getPaymentByBookingId(req.userId, req.userRole, req.params.bookingId)
+  const result = await paymentsService.getPaymentByBookingId(req.userId, req.userRole, req.params.bookingId as string)
   sendSuccess(res, result, "Data pembayaran berhasil diambil")
 }

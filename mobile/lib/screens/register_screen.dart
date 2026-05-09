@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,30 +13,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   // Controller untuk menangkap input pendaftaran
   final TextEditingController _namaController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _namaController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  // Logika bypass registrasi sementara
-  void _handleRegister() {
-    final nama = _namaController.text;
+  // Logika registrasi terhubung ke backend
+  Future<void> _handleRegister() async {
+    final nama = _namaController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text;
 
-    // Tampilkan notifikasi simulasi penyimpanan
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Registrasi diproses untuk: ${nama.isEmpty ? "Pengguna Baru" : nama}',
-        ),
-      ),
-    );
+    if (nama.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Semua kolom wajib diisi')),
+      );
+      return;
+    }
 
-    // Navigasi paksa ke halaman login atau beranda
-    Navigator.pushReplacementNamed(context, '/login');
+    setState(() {
+      _isLoading = true;
+    });
+
+    final result = await ApiService.register(nama, email, password, phone);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (result['success'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registrasi berhasil! Silakan login.')),
+      );
+      Navigator.pushReplacementNamed(context, '/login');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'] ?? 'Registrasi gagal')),
+      );
+    }
   }
 
   // Fungsi bantuan untuk merender kolom isian agar seragam
@@ -138,11 +164,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 hintText: 'Nama Lengkap',
                 controller: _namaController,
               ),
-              _buildInputField(hintText: 'Tempat, Tanggal Lahir'),
-              _buildInputField(hintText: 'Alamat'),
               _buildInputField(
-                hintText: 'Domisili',
-                suffixIcon: Icons.keyboard_arrow_down,
+                hintText: 'Email',
+                controller: _emailController,
+              ),
+              _buildInputField(
+                hintText: 'Nomor Telepon',
+                controller: _phoneController,
               ),
               _buildInputField(
                 hintText: 'Password',
@@ -172,15 +200,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     elevation: 0,
                   ),
-                  onPressed: _handleRegister,
-                  child: const Text(
-                    'Daftar',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  onPressed: _isLoading ? null : _handleRegister,
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          'Daftar',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
             ],

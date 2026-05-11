@@ -166,4 +166,23 @@ class ApiService {
       return {'success': false, 'message': 'Gagal terhubung ke server'};
     }
   }
+
+  // Ambil profil pengguna yang sedang login (membutuhkan token)
+  static Future<Map<String, dynamic>> getProfile({http.Client? client}) async {
+    try {
+      final response = await getRequest('/auth/profile', client: client);
+      final data = json.decode(response.body);
+
+      if (response.statusCode == 200 && data['success'] == true) {
+        return {'success': true, 'data': data['data']};
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Gagal mengambil profil',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Gagal terhubung ke server'};
+    }
+  }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../services/api_service.dart';
 
 class ProfilScreen extends StatefulWidget {
   const ProfilScreen({super.key});
@@ -20,32 +19,17 @@ class _ProfilScreenState extends State<ProfilScreen> {
     _fetchProfile();
   }
 
-  // Mengambil data profil dari backend API
+  // Mengambil data profil dari backend API (dengan JWT Token via ApiService)
   Future<void> _fetchProfile() async {
-    try {
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/api/profile'),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          _userProfile = data;
-        });
+    final result = await ApiService.getProfile();
+    setState(() {
+      if (result['success'] == true) {
+        _userProfile = result['data'];
       } else {
-        setState(() {
-          _userProfile = null;
-        });
-      }
-    } catch (e) {
-      setState(() {
         _userProfile = null;
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+      }
+      _isLoading = false;
+    });
   }
 
   // Navigasi Bottom Bar
@@ -60,6 +44,14 @@ class _ProfilScreenState extends State<ProfilScreen> {
       Navigator.pushReplacementNamed(context, '/favorit');
     } else if (index == 4) {
       // Sedang di halaman Profil, tidak perlu push
+    }
+  }
+
+  // Logout: hapus token dan kembali ke halaman login
+  Future<void> _logOut() async {
+    await ApiService.clearToken();
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/login');
     }
   }
 
@@ -217,6 +209,14 @@ class _ProfilScreenState extends State<ProfilScreen> {
                       title: 'Daftar Pembayaran',
                       isRedText: true, // Label text merah sesuai Mockup
                     ),
+                    _buildMenuCard(
+                      icon: Icons.logout,
+                      iconColor: const Color(0xFFE53935),
+                      iconBgColor: const Color(0xFFFFEBEE),
+                      title: 'Keluar',
+                      isRedText: true,
+                      onTapOverride: _logOut,
+                    ),
                   ],
                 ),
               ),
@@ -259,9 +259,10 @@ class _ProfilScreenState extends State<ProfilScreen> {
     required Color iconBgColor,
     required String title,
     bool isRedText = false,
+    VoidCallback? onTapOverride,
   }) {
     return GestureDetector(
-      onTap: () {
+      onTap: onTapOverride ?? () {
         if (title == 'Chat Vendor') {
           Navigator.pushNamed(
             context,

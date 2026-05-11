@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../dummy_data.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../services/api_service.dart';
 
 class PesananScreen extends StatefulWidget {
   const PesananScreen({super.key});
@@ -12,7 +10,7 @@ class PesananScreen extends StatefulWidget {
 
 class _PesananScreenState extends State<PesananScreen> {
   final int _currentIndex = 2; // Index 2 untuk halaman Pesanan
-  List<dynamic> _orders = DummyData.orders;
+  List<dynamic> _orders = [];
   bool _isLoading = true;
   bool _isBerjalan = true; // Toggle untuk tab "Berjalan" vs "Selesai"
 
@@ -24,30 +22,20 @@ class _PesananScreenState extends State<PesananScreen> {
 
   // Mengambil data pesanan dari backend API
   Future<void> _fetchOrders() async {
-    try {
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/api/orders'),
-      );
+    setState(() {
+      _isLoading = true;
+    });
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          _orders = data;
-        });
+    final result = await ApiService.getBookings();
+
+    setState(() {
+      if (result['success'] == true) {
+        _orders = result['data'];
       } else {
-        setState(() {
-          _orders = DummyData.orders;
-        });
+        _orders = [];
       }
-    } catch (e) {
-      setState(() {
-        _orders = DummyData.orders;
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+      _isLoading = false;
+    });
   }
 
   // Navigasi Bottom Bar
@@ -260,17 +248,22 @@ class _PesananScreenState extends State<PesananScreen> {
                         itemCount: _orders.length,
                         itemBuilder: (context, index) {
                           final item = _orders[index];
+                          // Adaptasi sesuai struktur prisma bookings
+                          final status = item['status'] ?? 'PENDING';
+                          final isPaid = status != 'PENDING'; // Sederhananya, anggap lunas jika bukan PENDING
+                          
+                          // Struktur relasi prisma: item['layanan']['namaLayanan'], item['layanan']['harga']
+                          final layananName = item['layanan'] != null ? item['layanan']['namaLayanan'] : 'Layanan';
+                          final price = item['layanan'] != null ? item['layanan']['harga'] : 0;
+                          
                           return _buildOrderCard(
                             id: item['id']?.toString() ?? '1',
-                            invoiceStatus:
-                                item['status'] ?? 'Menunggu Pembayaran',
-                            name: item['name'] ?? 'Vendor Name',
-                            date: item['date'] ?? 'Tanggal Acara',
-                            price: 'Rp ${item['price'] ?? 0}',
-                            imageUrl:
-                                item['imageUrl'] ??
-                                'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=200&auto=format&fit=crop',
-                            isPaid: item['isPaid'] ?? false,
+                            invoiceStatus: status,
+                            name: layananName,
+                            date: item['eventDate'] != null ? item['eventDate'].toString().substring(0, 10) : 'Tanggal Acara',
+                            price: 'Rp $price',
+                            imageUrl: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=200&auto=format&fit=crop',
+                            isPaid: isPaid,
                             context: context,
                           );
                         },

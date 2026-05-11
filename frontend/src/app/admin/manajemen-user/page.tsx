@@ -18,7 +18,7 @@ export default function AdminManajemenUserPage() {
 
     return (
         <>
-            <AdminHeader searchPlaceholder="CARI NAMA ATAU EMAIL USER..." />
+            <AdminHeader searchPlaceholder="Cari nama atau email user..." />
 
             <div className="flex-1 overflow-y-auto p-10 pb-16">
                 <div className="max-w-[1300px] mx-auto">

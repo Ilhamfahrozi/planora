@@ -1,7 +1,8 @@
 import app from "./app.js"
+import { env } from "./config/env.js"
 
-const PORT = Number(process.env.PORT) || 5000
-
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`)
+app.listen(env.PORT, () => {
+  console.log(`🚀 Server running  → http://localhost:${env.PORT}`)
+  console.log(`📦 Environment     → ${env.NODE_ENV}`)
+  console.log(`🗄️  Database        → ${env.DATABASE_URL.split("@").at(-1) ?? "connected"}`)
 })

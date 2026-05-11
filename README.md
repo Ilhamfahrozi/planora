@@ -1,6 +1,6 @@
 # Planora
 
-Platform marketplace layanan event.
+Platform marketplace layanan
 
 ## Tentang Project
 

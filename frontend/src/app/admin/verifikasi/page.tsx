@@ -83,7 +83,7 @@ function VendorCard({
 
 export default function AdminVerifikasiVendorPage() {
     return (
-        <div className="flex-1 flex flex-col h-full overflow-hidden relative bg-[#FAFAFC]">
+        <>
             <AdminHeader searchPlaceholder="CARI VENDOR YANG MENDAFTAR..." />
 
             <div className="flex-1 overflow-y-auto p-10 pb-16">
@@ -136,6 +136,6 @@ export default function AdminVerifikasiVendorPage() {
                     </div>
                 </div>
             </div>
-        </div>
+            </>
     );
 }

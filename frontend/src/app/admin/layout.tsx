@@ -2,16 +2,18 @@ import type { ReactNode } from 'react';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 
 type AdminLayoutProps = {
-    children: ReactNode;
+  children: ReactNode;
 };
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-    return (
-        <div className="flex h-screen w-full bg-[#F9FAFB] font-sans overflow-hidden relative">
-            <AdminSidebar />
-            <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-[#FAFAFC]">
-                {children}
-            </main>
-        </div>
-    );
+  return (
+    <div className="min-h-screen bg-[#FDF1F0] flex font-sans text-[#2A2A2A]">
+      <AdminSidebar />
+      <div className="flex-1 ml-64 flex flex-col min-h-screen overflow-hidden">
+        <main className="flex-1 overflow-y-auto bg-[#FDF1F0]">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
 }

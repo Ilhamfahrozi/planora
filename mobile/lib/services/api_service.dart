@@ -185,4 +185,36 @@ class ApiService {
       return {'success': false, 'message': 'Gagal terhubung ke server'};
     }
   }
+
+  // Ambil detail satu vendor berdasarkan ID
+  static Future<Map<String, dynamic>> getVendorById(String id, {http.Client? client}) async {
+    try {
+      final response = await getRequest('/vendors/$id', client: client);
+      final data = json.decode(response.body);
+
+      if (response.statusCode == 200 && data['success'] == true) {
+        return {'success': true, 'data': data['data']};
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Vendor tidak ditemukan'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Gagal terhubung ke server'};
+    }
+  }
+
+  // Ambil daftar paket/layanan milik satu vendor
+  static Future<Map<String, dynamic>> getVendorServices(String vendorId, {http.Client? client}) async {
+    try {
+      final response = await getRequest('/vendors/$vendorId/services', client: client);
+      final data = json.decode(response.body);
+
+      if (response.statusCode == 200 && data['success'] == true) {
+        return {'success': true, 'data': data['data'] ?? []};
+      } else {
+        return {'success': false, 'data': [], 'message': data['message'] ?? 'Gagal mengambil paket layanan'};
+      }
+    } catch (e) {
+      return {'success': false, 'data': [], 'message': 'Gagal terhubung ke server'};
+    }
+  }
 }

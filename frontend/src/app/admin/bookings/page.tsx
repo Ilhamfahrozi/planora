@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import FilterTabs from '@/components/admin/FilterTabs';
 import AdminPagination from '@/components/admin/AdminPagination';
 import StatusBadge from '@/components/admin/StatusBadge';
+import { getCategoryById } from '../../../lib/categories';
 
 const EyeIcon = ({ className }: { className?: string }) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
@@ -63,7 +64,7 @@ const bookings: Booking[] = [
         email: 'andi.pratama@gmail.com',
         telepon: '+62 812 3456 7890',
         vendor: 'Wafa Media Studio',
-        kategoriVendor: 'Fotografi',
+        kategoriVendor: 'fotografi',
         layanan: 'Paket Foto Pernikahan',
         tanggal: '20 Mei 2026',
         jamMulai: '08.00',
@@ -82,7 +83,7 @@ const bookings: Booking[] = [
         email: 'siti.a@outlook.com',
         telepon: '+62 856 7890 1234',
         vendor: 'Catering Jaya Raya',
-        kategoriVendor: 'Katering',
+        kategoriVendor: 'katering',
         layanan: 'Paket Katering 200 Pax',
         tanggal: '22 Mei 2026',
         jamMulai: '10.00',
@@ -101,7 +102,7 @@ const bookings: Booking[] = [
         email: 'budi.san@gmail.com',
         telepon: '+62 821 2345 6789',
         vendor: 'Dekor Elegan',
-        kategoriVendor: 'Dekorasi',
+        kategoriVendor: 'dekorasi',
         layanan: 'Paket Dekorasi Gedung',
         tanggal: '25 Mei 2026',
         jamMulai: '07.00',
@@ -120,7 +121,7 @@ const bookings: Booking[] = [
         email: 'rini.w@gmail.com',
         telepon: '+62 877 8901 2345',
         vendor: 'Musik Harmoni',
-        kategoriVendor: 'Hiburan',
+        kategoriVendor: 'hiburan',
         layanan: 'Paket Live Music 4 Jam',
         tanggal: '18 Mei 2026',
         jamMulai: '19.00',
@@ -367,9 +368,9 @@ export default function AdminManajemenBookingPage() {
                             <span className="text-[13px] font-extrabold text-[#2A2A2A]">
                                 {selectedBooking.vendor}
                             </span>
-                            <span className="text-[10px] font-bold text-[#FF9A9E]">
-                                {selectedBooking.kategoriVendor}
-                            </span>
+                                    <span className="text-[10px] font-bold text-[#FF9A9E]">
+                                        {getCategoryById(selectedBooking.kategoriVendor)?.name ?? selectedBooking.kategoriVendor}
+                                    </span>
                             <span className="text-[10px] font-medium text-[#2A2A2A]/50">
                                 {selectedBooking.layanan}
                             </span>

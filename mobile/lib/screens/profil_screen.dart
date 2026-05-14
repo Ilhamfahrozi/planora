@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../services/api_service.dart';
 
 class ProfilScreen extends StatefulWidget {
   const ProfilScreen({super.key});
@@ -23,28 +22,20 @@ class _ProfilScreenState extends State<ProfilScreen> {
   // Mengambil data profil dari backend API
   Future<void> _fetchProfile() async {
     try {
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/api/profile'),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final result = await ApiService.getProfile();
+      if (mounted) {
         setState(() {
-          _userProfile = data;
-        });
-      } else {
-        setState(() {
-          _userProfile = null;
+          if (result['success'] == true) {
+            _userProfile = result['data'];
+          } else {
+            _userProfile = null;
+          }
         });
       }
     } catch (e) {
-      setState(() {
-        _userProfile = null;
-      });
+      if (mounted) setState(() => _userProfile = null);
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -212,10 +203,47 @@ class _ProfilScreenState extends State<ProfilScreen> {
                     ),
                     _buildMenuCard(
                       icon: Icons.payment,
-                      iconColor: const Color(0xFFE53935), // Merah
+                      iconColor: const Color(0xFFE53935),
                       iconBgColor: const Color(0xFFFFEBEE),
                       title: 'Daftar Pembayaran',
-                      isRedText: true, // Label text merah sesuai Mockup
+                      isRedText: true,
+                    ),
+                    const SizedBox(height: 8),
+                    // Tombol Logout
+                    GestureDetector(
+                      onTap: () async {
+                        await ApiService.logout();
+                        if (mounted) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context, '/welcome', (route) => false);
+                        }
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFEBEE),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFFFFCDD2)),
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.logout, color: Color(0xFFE53935), size: 20),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                'Keluar',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFE53935),
+                                ),
+                              ),
+                            ),
+                            Icon(Icons.chevron_right, color: Color(0xFFE53935), size: 20),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),

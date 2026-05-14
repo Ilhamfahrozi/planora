@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
+import '../services/api_service.dart';
 
 class PembayaranScreen extends StatefulWidget {
   const PembayaranScreen({super.key});
@@ -45,41 +44,35 @@ class _PembayaranScreenState extends State<PembayaranScreen> {
 
   Future<void> _fetchOrders() async {
     try {
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/api/orders'),
-      );
+      final result = await ApiService.getBookings();
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (mounted) {
-          setState(() {
-            _orders = data;
-            if (_orders.isNotEmpty) {
-              if (_targetId != null) {
-                _selectedOrder = _orders.firstWhere(
-                  (o) => o['id'].toString() == _targetId,
-                  orElse: () => _orders.first,
-                );
-              } else {
-                _selectedOrder = _orders.firstWhere(
-                  (o) => (o['isPaid'] == false || o['status'] != 'Lunas'),
-                  orElse: () => _orders.first,
-                );
-              }
-              _startCountdown();
+      if (result['success'] == true && mounted) {
+        final bookings = result['data'] as List<dynamic>? ?? [];
+        setState(() {
+          // Hanya tampilkan booking yang belum CANCELLED / sudah ada
+          _orders = bookings;
+          if (_orders.isNotEmpty) {
+            if (_targetId != null) {
+              _selectedOrder = _orders.firstWhere(
+                (o) => o['id'].toString() == _targetId,
+                orElse: () => _orders.first,
+              );
+            } else {
+              // Prioritaskan yang statusnya PENDING / CONFIRMED dan belum lunas
+              _selectedOrder = _orders.firstWhere(
+                (o) => o['status'] == 'PENDING' || o['status'] == 'CONFIRMED',
+                orElse: () => _orders.first,
+              );
             }
-            _isLoading = false;
-          });
-        }
+            _startCountdown();
+          }
+          _isLoading = false;
+        });
       } else {
         if (mounted) setState(() => _isLoading = false);
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -125,58 +118,43 @@ class _PembayaranScreenState extends State<PembayaranScreen> {
     if (_selectedOrder == null) return;
 
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image == null) return; // User cancel
+    if (image == null) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
-    final orderId = _selectedOrder!['id'];
+    final bookingId = _selectedOrder!['id'].toString();
+    final totalPrice = (_selectedOrder!['totalPrice'] ?? 0).toDouble();
 
     try {
-      // Mengirim gambar dan mengubah status tagihan ke backend sesungguhnya API
-      var request = http.MultipartRequest(
-        'PUT',
-        Uri.parse('http://10.0.2.2:3000/api/orders/$orderId/pay'),
+      // Langkah 1: Buat payment record di backend
+      final payResult = await ApiService.createPayment(
+        bookingId: bookingId,
+        amount: totalPrice,
+        method: 'BANK_TRANSFER',
       );
-      request.files.add(await http.MultipartFile.fromPath('proof', image.path));
 
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (payResult['success'] == true) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Bukti transfer berhasil diupload!')),
+            const SnackBar(
+              content: Text('Pembayaran berhasil diajukan! Menunggu konfirmasi admin.'),
+              backgroundColor: Color(0xFF00C853),
+            ),
           );
         }
-        _fetchOrders(); // Refresh data
+        await _fetchOrders();
       } else {
-        // Fallback untuk antisipasi jika backend endpoint "/pay" belum menangani File / belum dibuat sepenuhnya
-        // Cobalah patch JSON status standar ke orders endpoint
-        final fallbackResponse = await http.patch(
-          Uri.parse('http://10.0.2.2:3000/api/orders/$orderId'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'isPaid': true, 'status': 'Lunas'}),
-        );
-        if (fallbackResponse.statusCode == 200 ||
-            fallbackResponse.statusCode == 204) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Bukti transfer berhasil diupdate (Fallback)'),
-              ),
-            );
-          }
-          _fetchOrders();
-        } else {
-          throw Exception('Gagal menghubungi API');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(payResult['message'] ?? 'Gagal mengajukan pembayaran.')),
+          );
         }
+        setState(() => _isLoading = false);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Terjadi kesalahan koneksi server.')),
+          const SnackBar(content: Text('Terjadi kesalahan. Coba lagi.')),
         );
       }
       setState(() => _isLoading = false);
@@ -228,9 +206,6 @@ class _PembayaranScreenState extends State<PembayaranScreen> {
                         final bool isSelected =
                             _selectedOrder != null &&
                             _selectedOrder!['id'] == item['id'];
-                        final bool isLunas =
-                            item['isPaid'] == true ||
-                            item['status']?.toString().toLowerCase() == 'lunas';
 
                         return GestureDetector(
                           onTap: () {
@@ -264,7 +239,7 @@ class _PembayaranScreenState extends State<PembayaranScreen> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
                                   child: Image.network(
-                                    item['imageUrl'] ??
+                                    item['vendor']?['imageUrl'] ??
                                         'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=200&auto=format&fit=crop',
                                     width: 60,
                                     height: 60,
@@ -283,7 +258,7 @@ class _PembayaranScreenState extends State<PembayaranScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        item['name'] ?? 'Vendor Name',
+                                        item['vendor']?['businessName'] ?? item['layanan']?['name'] ?? 'Layanan',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
@@ -292,15 +267,11 @@ class _PembayaranScreenState extends State<PembayaranScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        isLunas
-                                            ? 'Lunas'
-                                            : 'Menunggu Pembayaran',
+                                        _statusLabel(item['status'] ?? ''),
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
-                                          color: isLunas
-                                              ? Colors.grey
-                                              : const Color(0xFFE53935),
+                                          color: _statusColor(item['status'] ?? ''),
                                         ),
                                       ),
                                     ],
@@ -337,13 +308,27 @@ class _PembayaranScreenState extends State<PembayaranScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Status & Instruksi',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.black87,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Status & Instruksi',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  // Info Booking ID
+                                  Text(
+                                    'ID: ${_selectedOrder!['id'].toString().substring(0, 8).toUpperCase()}',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 20),
 
@@ -449,19 +434,16 @@ class _PembayaranScreenState extends State<PembayaranScreen> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    final isLunas =
-                                        _selectedOrder!['isPaid'] == true ||
-                                        _selectedOrder!['status']
-                                                ?.toString()
-                                                .toLowerCase() ==
-                                            'lunas';
-                                    if (isLunas) {
+                                    final isPaid =
+                                        _selectedOrder!['payment']?['status'] == 'PAID' ||
+                                        _selectedOrder!['status'] == 'COMPLETED';
+                                    if (isPaid) {
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
                                         const SnackBar(
                                           content: Text(
-                                            'Pesanan ini sudah lunas.',
+                                            'Pesanan ini sudah dibayar.',
                                           ),
                                         ),
                                       );
@@ -498,5 +480,27 @@ class _PembayaranScreenState extends State<PembayaranScreen> {
               ),
             ),
     );
+  }
+
+  String _statusLabel(String status) {
+    switch (status) {
+      case 'PENDING': return 'Menunggu Pembayaran';
+      case 'CONFIRMED': return 'Dikonfirmasi';
+      case 'IN_PROGRESS': return 'Sedang Berjalan';
+      case 'COMPLETED': return 'Selesai / Lunas';
+      case 'CANCELLED': return 'Dibatalkan';
+      default: return status;
+    }
+  }
+
+  Color _statusColor(String status) {
+    switch (status) {
+      case 'PENDING': return const Color(0xFFE53935);
+      case 'CONFIRMED': return const Color(0xFF00C853);
+      case 'IN_PROGRESS': return const Color(0xFF1976D2);
+      case 'COMPLETED': return Colors.grey;
+      case 'CANCELLED': return Colors.grey;
+      default: return Colors.grey;
+    }
   }
 }

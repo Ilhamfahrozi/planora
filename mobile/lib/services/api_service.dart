@@ -166,4 +166,51 @@ class ApiService {
       return {'success': false, 'message': 'Gagal terhubung ke server'};
     }
   }
+
+  // Ambil profil user yang sedang login
+  static Future<Map<String, dynamic>> getProfile({http.Client? client}) async {
+    try {
+      final response = await getRequest('/users/me', client: client);
+      final data = json.decode(response.body);
+
+      if (response.statusCode == 200 && data['success'] == true) {
+        return {'success': true, 'data': data['data']};
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Gagal mengambil profil'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Gagal terhubung ke server'};
+    }
+  }
+
+  // Buat Pembayaran (inisiasi payment record)
+  static Future<Map<String, dynamic>> createPayment({
+    required String bookingId,
+    required double amount,
+    required String method,
+    http.Client? client,
+  }) async {
+    try {
+      final response = await postRequest('/payments', {
+        'bookingId': bookingId,
+        'amount': amount,
+        'method': method,
+      }, client: client);
+
+      final data = json.decode(response.body);
+
+      if ((response.statusCode == 200 || response.statusCode == 201) && data['success'] == true) {
+        return {'success': true, 'data': data['data']};
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Gagal membuat pembayaran'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Gagal terhubung ke server'};
+    }
+  }
+
+  // Hapus token (Logout)
+  static Future<void> logout() async {
+    await clearToken();
+  }
 }

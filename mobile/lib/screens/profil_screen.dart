@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../main.dart' show PlanoraColors;
 
@@ -21,19 +22,50 @@ class _ProfilScreenState extends State<ProfilScreen> {
     _fetchProfile();
   }
 
-  // Mengambil data profil dari backend API
+  // Mengambil data profil — backend dulu, fallback ke bypass data
   Future<void> _fetchProfile() async {
+    // Coba ambil dari backend
     try {
+      final token = await ApiService.getToken();
+      // Jika token adalah bypass token, langsung pakai data bypass
+      if (token == 'bypass_admin_token_planora_2024') {
+        await _loadBypassProfile();
+        return;
+      }
       final result = await ApiService.getProfile();
       if (mounted) {
-        setState(() {
-          _userProfile = result['success'] == true ? result['data'] : null;
-        });
+        if (result['success'] == true) {
+          setState(() => _userProfile = result['data']);
+        } else {
+          // Backend gagal — coba bypass data
+          await _loadBypassProfile();
+        }
       }
     } catch (e) {
-      if (mounted) setState(() => _userProfile = null);
+      // Network error — coba bypass data
+      if (mounted) await _loadBypassProfile();
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  // Load data profil dari SharedPreferences (bypass/demo mode)
+  Future<void> _loadBypassProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final name  = prefs.getString('bypass_name');
+    final email = prefs.getString('bypass_email');
+    final phone = prefs.getString('bypass_phone');
+
+    if (name != null && mounted) {
+      setState(() {
+        _userProfile = {
+          'name' : name,
+          'email': email ?? 'adminplanora@gmail.com',
+          'phone': phone ?? '0895619465026',
+          'role' : 'ADMIN',
+          'avatar': null,
+        };
+      });
     }
   }
 
@@ -157,11 +189,51 @@ class _ProfilScreenState extends State<ProfilScreen> {
                                   ),
                                   const SizedBox(height: 4),
 
-                                  // Email
+                                   // Email
                                   Text(
                                     _userProfile!['email'] ?? 'email@pengguna.com',
                                     style: tt.bodySmall,
                                   ),
+                                  const SizedBox(height: 4),
+
+                                  // Nomor Telepon
+                                  if (_userProfile!['phone'] != null)
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.phone_outlined,
+                                          size: 13,
+                                          color: PlanoraColors.brandGray,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          _userProfile!['phone'],
+                                          style: tt.bodySmall,
+                                        ),
+                                      ],
+                                    ),
+                                  const SizedBox(height: 8),
+
+                                  // Badge Role
+                                  if (_userProfile!['role'] != null)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: PlanoraColors.brandAccent,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        _userProfile!['role'] == 'ADMIN'
+                                            ? '⭐ Admin Planora'
+                                            : _userProfile!['role'],
+                                        style: tt.labelSmall?.copyWith(
+                                          color: PlanoraColors.brandDark,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
                                   const SizedBox(height: 16),
 
                                   // Tombol Edit Profil

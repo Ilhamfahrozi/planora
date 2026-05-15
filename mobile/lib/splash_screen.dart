@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import 'main.dart' show PlanoraColors;
@@ -20,27 +20,28 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // ── Animasi fade + scale masuk ─────────────────────────────────────────
+    // â”€â”€ Animasi fade + scale masuk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
 
-    _fadeAnim = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    );
+    _fadeAnim = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
 
-    _scaleAnim = Tween<double>(begin: 0.88, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _scaleAnim = Tween<double>(
+      begin: 0.88,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _controller.forward();
 
-    // Navigasi ke Welcome setelah 3 detik
+    // Navigasi bypass ke Home setelah 3 detik
     Timer(const Duration(seconds: 3), () {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/welcome');
+        Navigator.pushReplacementNamed(
+          context,
+          '/home',
+        ); // Bypass: Ganti '/welcome' dengan '/home'
       }
     });
   }
@@ -63,15 +64,11 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // ── Logo ─────────────────────────────────────────────────
-                Image.asset(
-                  'assets/images/logo.png',
-                  width: 96,
-                  height: 96,
-                ),
+                // â”€â”€ Logo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                Image.asset('assets/images/logo.png', width: 96, height: 96),
                 const SizedBox(height: 20),
 
-                // ── Nama Aplikasi (Playfair Display) ──────────────────────
+                // â”€â”€ Nama Aplikasi (Playfair Display) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 Text(
                   'Planora',
                   style: GoogleFonts.playfairDisplay(
@@ -83,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 const SizedBox(height: 8),
 
-                // ── Tagline (Plus Jakarta Sans) ───────────────────────────
+                // â”€â”€ Tagline (Plus Jakarta Sans) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 Text(
                   'Plan your moments beautifully.',
                   style: GoogleFonts.plusJakartaSans(
@@ -95,7 +92,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 const SizedBox(height: 48),
 
-                // ── Loading indicator tipis ───────────────────────────────
+                // â”€â”€ Loading indicator tipis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 SizedBox(
                   width: 24,
                   height: 24,

@@ -19,8 +19,9 @@ class _ProfilScreenState extends State<ProfilScreen> {
     _fetchProfile();
   }
 
-  // Mengambil data profil dari backend API
+  // Mengambil data profil dari backend API (dengan JWT Token via ApiService)
   Future<void> _fetchProfile() async {
+
     try {
       final result = await ApiService.getProfile();
       if (mounted) {
@@ -37,6 +38,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+
   }
 
   // Navigasi Bottom Bar
@@ -51,6 +53,14 @@ class _ProfilScreenState extends State<ProfilScreen> {
       Navigator.pushReplacementNamed(context, '/favorit');
     } else if (index == 4) {
       // Sedang di halaman Profil, tidak perlu push
+    }
+  }
+
+  // Logout: hapus token dan kembali ke halaman login
+  Future<void> _logOut() async {
+    await ApiService.clearToken();
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/login');
     }
   }
 
@@ -245,6 +255,14 @@ class _ProfilScreenState extends State<ProfilScreen> {
                         ),
                       ),
                     ),
+                    _buildMenuCard(
+                      icon: Icons.logout,
+                      iconColor: const Color(0xFFE53935),
+                      iconBgColor: const Color(0xFFFFEBEE),
+                      title: 'Keluar',
+                      isRedText: true,
+                      onTapOverride: _logOut,
+                    ),
                   ],
                 ),
               ),
@@ -287,9 +305,10 @@ class _ProfilScreenState extends State<ProfilScreen> {
     required Color iconBgColor,
     required String title,
     bool isRedText = false,
+    VoidCallback? onTapOverride,
   }) {
     return GestureDetector(
-      onTap: () {
+      onTap: onTapOverride ?? () {
         if (title == 'Chat Vendor') {
           Navigator.pushNamed(
             context,
@@ -349,3 +368,4 @@ class _ProfilScreenState extends State<ProfilScreen> {
     );
   }
 }
+

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 
 class PesananScreen extends StatefulWidget {
@@ -22,20 +23,41 @@ class _PesananScreenState extends State<PesananScreen> {
 
   // Mengambil data pesanan dari backend API
   Future<void> _fetchOrders() async {
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     final result = await ApiService.getBookings();
 
+    if (!mounted) return;
     setState(() {
       if (result['success'] == true) {
-        _orders = result['data'];
+        _orders = result['data'] ?? [];
       } else {
         _orders = [];
+        // Tampilkan error ringan via SnackBar
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(result['message'] ?? 'Gagal memuat pesanan')),
+          );
+        });
       }
       _isLoading = false;
     });
+  }
+
+  // Format angka ke Rupiah
+  String _formatCurrency(dynamic value) {
+    if (value == null) return 'Rp 0';
+    try {
+      final double amount =
+          value is String ? double.parse(value) : value.toDouble();
+      return NumberFormat.currency(
+        locale: 'id_ID',
+        symbol: 'Rp ',
+        decimalDigits: 0,
+      ).format(amount);
+    } catch (_) {
+      return 'Rp 0';
+    }
   }
 
   // Navigasi Bottom Bar
@@ -230,15 +252,33 @@ class _PesananScreenState extends State<PesananScreen> {
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : _orders.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 40.0),
-                          child: Text(
-                            'Belum ada pesanan layanan dari server.',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontStyle: FontStyle.italic,
-                            ),
+                          padding: const EdgeInsets.symmetric(vertical: 40.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.receipt_long_outlined,
+                                  size: 64, color: Colors.grey.shade300),
+                              const SizedBox(height: 16),
+                              const Text(
+                                'Belum ada riwayat pesanan.',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontStyle: FontStyle.italic,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Yuk, cari vendor dan buat pesanan pertamamu!',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 13,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
                       )
@@ -248,21 +288,34 @@ class _PesananScreenState extends State<PesananScreen> {
                         itemCount: _orders.length,
                         itemBuilder: (context, index) {
                           final item = _orders[index];
-                          // Adaptasi sesuai struktur prisma bookings
+                          // Mapping field response backend Prisma:
+                          // booking.layanan.namaLayanan, booking.layanan.harga
+                          // booking.vendor.businessName (jika relasi nested)
                           final status = item['status'] ?? 'PENDING';
-                          final isPaid = status != 'PENDING'; // Sederhananya, anggap lunas jika bukan PENDING
-                          
-                          // Struktur relasi prisma: item['layanan']['namaLayanan'], item['layanan']['harga']
-                          final layananName = item['layanan'] != null ? item['layanan']['namaLayanan'] : 'Layanan';
-                          final price = item['layanan'] != null ? item['layanan']['harga'] : 0;
-                          
+                          final isPaid = status != 'PENDING';
+
+                          final layanan = item['layanan'];
+                          final layananName = layanan?['namaLayanan'] ??
+                              layanan?['name'] ??
+                              'Layanan';
+                          final harga = layanan?['harga'] ?? layanan?['price'] ?? 0;
+
+                          // Nama vendor: dari relasi nested atau field langsung
+                          final vendorName = item['vendor']?['businessName'] ??
+                              item['vendor']?['name'] ??
+                              layananName;
+
                           return _buildOrderCard(
                             id: item['id']?.toString() ?? '1',
                             invoiceStatus: status,
-                            name: layananName,
-                            date: item['eventDate'] != null ? item['eventDate'].toString().substring(0, 10) : 'Tanggal Acara',
-                            price: 'Rp $price',
-                            imageUrl: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=200&auto=format&fit=crop',
+                            name: vendorName,
+                            subLabel: layananName,
+                            date: item['eventDate'] != null
+                                ? item['eventDate'].toString().substring(0, 10)
+                                : 'Tanggal Acara',
+                            price: _formatCurrency(harga),
+                            imageUrl:
+                                'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=200&auto=format&fit=crop',
                             isPaid: isPaid,
                             context: context,
                           );
@@ -311,6 +364,7 @@ class _PesananScreenState extends State<PesananScreen> {
     required String id,
     required String invoiceStatus,
     required String name,
+    String? subLabel,
     required String date,
     required String price,
     required String imageUrl,
@@ -388,6 +442,17 @@ class _PesananScreenState extends State<PesananScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        if (subLabel != null && subLabel.isNotEmpty) ...
+                          [
+                            const SizedBox(height: 2),
+                            Text(
+                              subLabel,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
                         const SizedBox(height: 4),
                         Row(
                           children: [

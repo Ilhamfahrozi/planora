@@ -41,6 +41,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final result = await ApiService.login(email, password);
 
+    if (!mounted) return;
+
     setState(() {
       _isLoading = false;
     });

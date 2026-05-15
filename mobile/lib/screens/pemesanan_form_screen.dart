@@ -91,9 +91,13 @@ class _PemesananFormScreenState extends State<PemesananFormScreen> {
 
       if (result['success'] == true) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pemesanan berhasil!')),
+          const SnackBar(
+            content: Text('Pemesanan berhasil! Cek riwayat pesanan Anda.'),
+            backgroundColor: Color(0xFF00C48C),
+          ),
         );
-        Navigator.popUntil(context, ModalRoute.withName('/home'));
+        // Navigasi ke layar Pesanan agar user bisa lihat ordernya langsung
+        Navigator.pushReplacementNamed(context, '/pesanan');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

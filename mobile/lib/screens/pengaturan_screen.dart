@@ -18,7 +18,7 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
 
     try {
       // Dummy API integrasi buat membersihkan sesi di server (opsional)
-      await http.post(Uri.parse('http://10.0.2.2:3000/api/auth/logout'));
+      await http.post(Uri.parse('http://10.0.2.2:5000/api/v1/auth/logout'));
 
       // Jika butuh Clear SharedPreferences, jalankan di sini...
       // misal:
@@ -95,12 +95,7 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
                       icon: Icons.person_outline,
                       title: 'Edit Profil',
                       onTap: () {
-                        // Navigator.pushNamed(context, '/edit_profil');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Menu Edit Profil ditekuk (Mock)'),
-                          ),
-                        );
+                        Navigator.pushNamed(context, '/edit_profil');
                       },
                     ),
                     _buildDivider(),

@@ -48,6 +48,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final result = await ApiService.register(nama, email, password, phone);
 
+    if (!mounted) return;
+
     setState(() {
       _isLoading = false;
     });

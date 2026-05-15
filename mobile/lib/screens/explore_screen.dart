@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../services/api_service.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -10,7 +9,7 @@ class ExploreScreen extends StatefulWidget {
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
-  final int _currentIndex = 1; // Index 1 untuk halaman Eksplor
+  final int _currentIndex = 1;
   List<dynamic> _recommendations = [];
   bool _isLoading = true;
 
@@ -19,14 +18,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   List<dynamic> get _filteredRecommendations {
     return _recommendations.where((item) {
-      final name = item['name']?.toString().toLowerCase() ?? '';
-      // Map category name slightly if needed, or exact match
-      final category = item['category']?.toString().toLowerCase() ?? '';
+      final name = (item['businessName'] ?? item['name'] ?? '').toString().toLowerCase();
+      final category = (item['category'] ?? '').toString().toLowerCase();
 
       final matchesSearch =
           _searchQuery.isEmpty || name.contains(_searchQuery.toLowerCase());
-      // Untuk Kategori "Semua", kita cek kosongan. Untuk "Lainnya", etc.
-      // Di API biasanya kategori di set "Gedung", "Katering", dsb.
       final matchesCategory =
           _selectedCategory.isEmpty ||
           category == _selectedCategory.toLowerCase();
@@ -41,31 +37,18 @@ class _ExploreScreenState extends State<ExploreScreen> {
     _fetchRecommendations();
   }
 
-  // Mengambil data layanan/vendor riil dari backend API
   Future<void> _fetchRecommendations() async {
     try {
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/api/services'),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final vendorsData = await ApiService.getVendors();
+      if (mounted) {
         setState(() {
-          _recommendations = data;
-        });
-      } else {
-        setState(() {
-          _recommendations = [];
+          _recommendations = vendorsData;
         });
       }
     } catch (e) {
-      setState(() {
-        _recommendations = [];
-      });
+      if (mounted) setState(() => _recommendations = []);
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -74,7 +57,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     if (index == 0) {
       Navigator.pushReplacementNamed(context, '/home');
     } else if (index == 1) {
-      // Sedang di halaman Eksplor, tidak perlu push
+      // Sedang di halaman Eksplor
     } else if (index == 2) {
       Navigator.pushReplacementNamed(context, '/pesanan');
     } else if (index == 3) {
@@ -177,15 +160,21 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         itemCount: _filteredRecommendations.length,
                         itemBuilder: (context, index) {
                           final item = _filteredRecommendations[index];
+                          // Mapping field dari backend (businessName, avatar, dll)
+                          final avatar = item['avatar']?.toString() ?? '';
+                          final imageUrl = avatar.isNotEmpty
+                              ? (avatar.startsWith('http')
+                                  ? avatar
+                                  : 'http://10.0.2.2:5000/assets/$avatar')
+                              : 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=200&auto=format&fit=crop';
+
                           return _buildRecommendationCard(
                             id: item['id']?.toString() ?? '1',
-                            name: item['name'] ?? 'Layanan',
+                            name: item['businessName'] ?? item['name'] ?? 'Layanan',
                             category: item['category'] ?? 'Kategori',
-                            price: 'Rp ${item['price'] ?? 0}',
+                            price: 'Lihat Detail',
                             rating: item['rating']?.toString() ?? '0.0',
-                            imageUrl:
-                                item['imageUrl'] ??
-                                'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=200&auto=format&fit=crop',
+                            imageUrl: imageUrl,
                             context: context,
                           );
                         },
@@ -366,6 +355,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 80,
+                  height: 80,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.storefront, color: Colors.grey),
+                ),
               ),
             ),
             const SizedBox(width: 16),
